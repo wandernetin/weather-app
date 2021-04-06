@@ -5,21 +5,21 @@ const geocode = require('./utils/geocode');
 
 var city = yargs.argv.city;
 
-if(city) {
-    geocode(city, (error, data) => {
+if (city) {
+    geocode(city, (error, { center, place_name }) => {
         if (error)
             return console.log(error);
-    
-        forecast(data.center[1], data.center[0], (errorForecast, dataForecast) => {
+
+        forecast(center[1], center[0], (errorForecast, { weather_descriptions, temperature, feelslike, precip }) => {
             if (errorForecast)
                 return console.log(errorForecast);
-    
-            console.log(data.place_name);
-            console.log(dataForecast.weather_descriptions[0] + '.');
-            console.log('It is currently ' + dataForecast.temperature + ' degrees out.');
-            console.log('It feel likes ' + dataForecast.feelslike + ' degrees.');
-            console.log('There is a ' + dataForecast.precip + '% chance of rain.');
-    
+
+            console.log(place_name);
+            console.log(weather_descriptions[0] + '.');
+            console.log('It is currently ' + temperature + ' degrees out.');
+            console.log('It feel likes ' + feelslike + ' degrees.');
+            console.log('There is a ' + precip + '% chance of rain.');
+
         })
     })
 } else {
