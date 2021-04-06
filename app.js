@@ -1,36 +1,42 @@
 const request = require('request');
 
-const url = 'http://api.weatherstack.com/current?access_key=60266219577ed2341baa752243552833&query=33.20,-112&units=m';
-
-request({ url: url, json: true}, (error, response) => {
-    if(!error) {
-        if(!response.body.error) {
-            console.log(response.body.current.weather_descriptions[0] + '.');
-            console.log('It is currently '+ response.body.current.temperature + ' degrees out.');
-            console.log('It feel likes ' + response.body.current.feelslike + ' degrees.');
-            console.log('There is a ' + response.body.current.precip + '% chance of rain.');
+const geocode = (address, callback) => {
+    const mapBoxUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(address) + '.json?access_token=pk.eyJ1IjoibmV0aW5iaCIsImEiOiJja241b2E5N3AwNjVtMndyZzF2dTF4cWJ0In0.PK38HNFf7X55qpt-Wj0JmQ&limit=1';
+    request({ url: mapBoxUrl, json: true }, (error, response) => {
+        if (!error) {
+            if (response.body.features.length > 0) {
+                const lat = response.body.features[0].center[1];
+                const long = response.body.features[0].center[0];
+                const weatherUrl = 'http://api.weatherstack.com/current?access_key=60266219577ed2341baa752243552833&query=' + lat + ',' + long + '&units=m';
+                request({ url: weatherUrl, json: true }, (error, response) => {
+                    if (!error) {
+                        if (!response.body.error) {
+                            callback(null, response.body.current);
+                        } else {
+                            callback('Error - Unable to find location', null);
+                        }
+                    } else {
+                        callback('Unable to connect to weather service!', null);
+                    }
+                });
+            } else {
+                callback('No location was found!', null);
+            }
         } else {
-            console.log('Error - Unable to find location');
+            callback('Unable to connect to location service!', null);
         }
+    });
+}
+
+geocode('Belo Horizonte', (error, data) => {
+    if (error) {
+        console.log(error);
     } else {
-        console.log('Unable to connect to weather service!');
+        console.log(data.weather_descriptions[0] + '.');
+        console.log('It is currently ' + data.temperature + ' degrees out.');
+        console.log('It feel likes ' + data.feelslike + ' degrees.');
+        console.log('There is a ' + data.precip + '% chance of rain.');
+
     }
-});
-
-const mapBoxUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/brisbane.json?access_token=pk.eyJ1IjoibmV0aW5iaCIsImEiOiJja241b2E5N3AwNjVtMndyZzF2dTF4cWJ0In0.PK38HNFf7X55qpt-Wj0JmQ&limit=1';
-
-request({ url: mapBoxUrl, json: true}, (error, response) => {
-    if(!error) {
-        if (response.body.features.length > 0) {
-            console.log('Lat is ' + response.body.features[0].center[1]);
-            console.log('Long is ' + response.body.features[0].center[0]);
-        } else {
-            console.log('No location was found!');
-        }
-    } else {
-        console.log('Unable to connect to location service!');
-    }
-});
-
-
+})
 
