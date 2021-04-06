@@ -3,11 +3,11 @@ const request = require('request');
 const weatherStackToken = '60266219577ed2341baa752243552833';
 
 const forecast = (lat, long, callback) => {
-    const weatherUrl = 'http://api.weatherstack.com/current?access_key=' + weatherStackToken + '&query=' + lat + ',' + long + '&units=m';
-    request({ url: weatherUrl, json: true }, (error, response) => {
+    const url = 'http://api.weatherstack.com/current?access_key=' + weatherStackToken + '&query=' + lat + ',' + long + '&units=m';
+    request({ url, json: true }, (error, {body}) => {
         if (!error) {
-            if (!response.body.error) {
-                callback(undefined, response.body.current);
+            if (!body.error) {
+                callback(undefined, body.current);
             } else {
                 callback('Error - Unable to find location', undefined);
             }
