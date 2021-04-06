@@ -6,11 +6,11 @@ const geocode = require('./utils/geocode');
 var city = yargs.argv.city;
 
 if (city) {
-    geocode(city, (error, { center, place_name }) => {
+    geocode(city, (error, { center, place_name } = {}) => {
         if (error)
             return console.log(error);
 
-        forecast(center[1], center[0], (errorForecast, { weather_descriptions, temperature, feelslike, precip }) => {
+        forecast(center[1], center[0], (errorForecast, { weather_descriptions, temperature, feelslike, precip } = {}) => {
             if (errorForecast)
                 return console.log(errorForecast);
 

@@ -7,12 +7,12 @@ const geocode = (address, callback) => {
     request({ url: mapBoxUrl, json: true }, (error, response) => {
         if (!error) {
             if (response.body.features.length > 0) {
-                callback(null, response.body.features[0]);
+                callback(undefined, response.body.features[0]);
             } else {
-                callback('No location was found!', null);
+                callback('No location was found!', undefined);
             }
         } else {
-            callback('Unable to connect to location service!', null);
+            callback('Unable to connect to location service!', undefined);
         }
     });
 }
